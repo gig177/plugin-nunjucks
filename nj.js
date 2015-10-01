@@ -12,10 +12,6 @@ if (typeof window === 'undefined') {
     global.__nodeEnv__ = true;
 }
 
-/*
-  Text plugin
-*/
-
 exports.translate = function(load) {
     var SystemJSLoader = this;
 
