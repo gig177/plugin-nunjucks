@@ -84,6 +84,17 @@ function _loadDictFile(requestURI, isLocalize) {
     });
 }
 function _localizeTpl(tpl, dict) {
+    tpl.matchAll(/\[\[(.+?)\]\]/g).forEach(function(matched) {
+        var key = matched[1].trim();
+        if (key in dict) {
+            tpl = tpl.replace(matched[0], dict[key])
+        } else {
+            tpl = tpl.replace(matched[0], key);
+        }
+    });
+    return tpl;
+
+    debugger
     for (var key in dict) {
         var ptn = new RegExp('\\[\\[\\s*?' + key + '\\s*?\\]\\]');
         tpl = tpl.replace(ptn, dict[key]);
@@ -141,3 +152,14 @@ function _calclulateParentOfTplDir(dir) {
         throw new Error("tpl dir doesn't found");
     return dir.join('/') + '/';
 }
+String.prototype.matchAll = function(regexp) {
+    var matches = [];
+    this.replace(regexp, function() {
+        var arr = ([]).slice.call(arguments, 0);
+        var extras = arr.splice(-2);
+        arr.index = extras[0];
+        arr.input = extras[1];
+        matches.push(arr);
+    });
+    return matches.length ? matches : null;
+};

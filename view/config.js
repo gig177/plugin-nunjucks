@@ -14,7 +14,7 @@ System.config({
   },
 
   njOptions: {
-    "locale": "ru"
+    "locale": "ru" // at building runtime
   },
 
   map: {
