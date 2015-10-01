@@ -13,17 +13,6 @@ System.config({
     "npm:*": "jspm_packages/npm/*"
   },
 
-  packages: {
-    "app": {
-      "main": "main",
-      "meta": {
-        "*.html": {
-          "loader": "nj"
-        }
-      }
-    }
-  },
-
   map: {
     "babel": "npm:babel-core@5.8.25",
     "babel-runtime": "npm:babel-runtime@5.8.25",
