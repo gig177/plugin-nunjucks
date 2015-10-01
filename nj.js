@@ -78,6 +78,9 @@ function _localizeTpl(tpl, dict) {
     return tpl;
 }
 
+
+// this snippet from origin nunjucks code base
+// https://github.com/mozilla/nunjucks/blob/v2.1.0/src/precompile.js#L113
 function _precompile(str, name, env) {
     env = env || new Environment([]);
 
