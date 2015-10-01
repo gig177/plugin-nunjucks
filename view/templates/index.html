@@ -8,12 +8,12 @@
     </script>
 
     {% if DEV == 0 %}
-        <script src="/view/dist/{{ app }}.js"></script>
+        <script src="/view/build/{{ tpl }}.js"></script>
     {% else %}
-        <script src="/view/jspm_packages/system.src.js"></script>
+        <script src="/view/jspm_packages/system.js"></script>
         <script src="/view/config.js"></script>
         <script>
-            System.import('layouts/{{ app }}');
+            System.import('pages/{{ tpl }}');
         </script>
     {% endif %}
 </head>

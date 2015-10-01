@@ -1,0 +1,5 @@
+__pycache__
+view/jspm_packages
+view/build
+node_modules
+reports

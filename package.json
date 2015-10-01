@@ -1,0 +1,30 @@
+{
+  "name": "plugin-nunjucks",
+  "version": "0.1.0",
+  "description": "Nunjucks loader plugin",
+  "main": "nj.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gig177/plugin-nunjucks.git"
+  },
+  "keywords": [
+    "nunjucks",
+    "plugin-nunjucks",
+    "gulp-nunjucks",
+    "systemjs plugin",
+    "systemjs",
+    "jspm"
+  ],
+  "author": "Evgeniy Poturaev",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gig177/plugin-nunjucks/issues"
+  },
+  "homepage": "https://github.com/gig177/plugin-nunjucks#readme",
+  "devDependencies": {
+    "nightwatch": "^0.8.3"
+  }
+}
