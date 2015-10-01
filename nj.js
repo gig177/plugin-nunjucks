@@ -15,22 +15,29 @@ if (typeof window === 'undefined') {
 exports.translate = function(load) {
     var SystemJSLoader = this;
 
-    var lang = this.lang || 'ru';
+    var lang = '';
+    if ('njOptions' in this && 'locale' in this.njOptions)
+        lang = this.njOptions.locale;
     var tpl = load.source;
 
     var basePath = _calclulateParentOfTplDir(load.address).replace(this.baseURL, ''),
         fileName = path.basename(load.address).slice(0, -5);
 
-    return _loadDictFile.call(this, path.join(basePath, 'loc', lang, fileName + '.loc'))
+    return _loadDictFile.call(this, path.join(basePath, 'loc', lang, fileName + '.loc'), !!lang)
     .then(function(file) {
         return new Promise(function(resolve, reject) {
             var dict = _parseDictFile(file);
-            //tpl = _localizeTpl(tpl, dict);
 
             if (!_isNunjucksTpl(tpl)) {
                 //console.log('simple html');
-                resolve( textPlugin.translate(load) );
+                tpl = textPlugin.translate(load);
+                if (dict)
+                    tpl = _localizeTpl(tpl, dict);
+                resolve(tpl);
             }
+
+            if (dict)
+                tpl = _localizeTpl(tpl, dict);
 
             //tpl = _cleanTplFromCommonJsFormat(tpl);
             var name = _resolvePathToDir(load.address);
@@ -45,6 +52,7 @@ exports.translate = function(load) {
         });
     });
 }
+
 function _isNunjucksTpl(text) {
     return text.indexOf('{{') !== -1 || text.indexOf('{%') !== -1;
 }
@@ -59,7 +67,13 @@ function _parseDictFile(file) {
     });
     return out;
 }
-function _loadDictFile(requestURI) {
+function _loadDictFile(requestURI, isLocalize) {
+    if (!isLocalize) {
+        return new Promise(function(resolve) {
+            resolve('');
+        });
+    }
+
     var SystemJSLoader = this;
     return new Promise(function(resolve, reject) {
         SystemJSLoader.import(requestURI + '!text').then(function(file) {
