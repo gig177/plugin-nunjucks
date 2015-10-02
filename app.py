@@ -1,5 +1,4 @@
-from flask import Flask, render_template, request, Response, g
-import os
+from flask import Flask, render_template, request
 
 app = Flask(__name__, template_folder='view/templates',
             static_folder='view')
