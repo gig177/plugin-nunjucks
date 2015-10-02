@@ -108,10 +108,8 @@ function _precompile(str, name, env) {
                                     extensions,
                                     name,
                                     env.opts);
-    }
-    catch(err) {
-        console.log(err);
-        //throw lib.prettifyError(name, false, err);
+    } catch(err) {
+        throw nj.lib.prettifyError(name, false, err);
     }
 
     return { name: name, template: template };
