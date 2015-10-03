@@ -27,4 +27,4 @@ export var PrecompiledLoader = nj.Loader.extend({
 export var env = new nj.Environment( new PrecompiledLoader() ); 
 export default function(tpl, ctx) {
     return env.render(tpl, ctx);
-};
+}
