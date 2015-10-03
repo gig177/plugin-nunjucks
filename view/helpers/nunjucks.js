@@ -17,11 +17,11 @@ export var PrecompiledLoader = nj.Loader.extend({
         return {
             src: {
                 type: 'code',
-                obj: this.precompiled[name]
+                obj: this.precompiled[name],
             },
-            path: name
+            path: name,
         };
-    }
+    },
 });
 
 export var env = new nj.Environment( new PrecompiledLoader() ); 
