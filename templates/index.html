@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head> 
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>test page</title>
+    <script>
+        var DEV = {{ DEV }};
+    </script>
+
+    {% if DEV == 0 %}
+        <script src="/view/build/{{ tpl }}.js"></script>
+    {% else %}
+        <script src="/view/jspm_packages/system.js"></script>
+        <script src="/view/config.js"></script>
+        <script>
+            System.config({ njOptions: { locale: 'ru' } });
+            System.import('pages/{{ tpl }}');
+        </script>
+    {% endif %}
+</head>
+<body>
+</body>
+</html>

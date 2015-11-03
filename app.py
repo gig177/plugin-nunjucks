@@ -1,7 +1,6 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, send_from_directory
 
-app = Flask(__name__, template_folder='view/templates',
-            static_folder='view')
+app = Flask(__name__, template_folder='templates')
 
 @app.route('/')
 def index(module=False):
@@ -10,3 +9,6 @@ def index(module=False):
     print('dev:', dev)
     return render_template('index.html', DEV=int(dev), tpl=request.args.get('tpl'))
 
+@app.route('/<path>')
+def static_proxy(path):
+    return send_from_directory('.', path)
