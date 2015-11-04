@@ -1,5 +1,5 @@
 System.config({
-  baseURL: "/view/",
+  baseURL: "/",
   defaultJSExtensions: true,
   transpiler: "babel",
   babelOptions: {
@@ -12,9 +12,8 @@ System.config({
     "github:*": "jspm_packages/github/*",
     "npm:*": "jspm_packages/npm/*"
   },
-
   njOptions: {
-    "locale": "ru" // at building runtime
+    "locale": "ru"
   },
 
   map: {

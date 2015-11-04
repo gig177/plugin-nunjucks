@@ -1,20 +1,20 @@
 var qs = require('querystring');
 
-var url = 'http://localhost:5000';
+var url = 'http://localhost:3000';
 
 var tests = {};
 tests.child = function(client) {
-    client.expect.element('._left_side').text.to.contain('Это левая сторона');
+    client.expect.element('._left_side').text.to.contain('Это левая сторона').before(3000);
     client.expect.element('._right_side').text.to.contain('This is the right side');
     client.expect.element('._default_content').text.to.contain('This is the default content');
 };
 tests._parent = function(client) {
-    client.expect.element('._default_content').text.to.contain('This is the default content');
+    client.expect.element('._default_content').text.to.contain('This is the default content').before(3000);
     client.expect.element('._more_content').text.to.contain('This is more content');
     client.expect.element('._username').text.to.contain('Evgen');
 };
 tests.simple_text = function(client) {
-    client.expect.element('._hello_msg').text.to.contain('hello_msg');
+    client.expect.element('._hello_msg').text.to.contain('hello_msg').before(3000);
     client.expect.element('._by_msg').text.to.contain('прощальное сообщение');
 }
 
