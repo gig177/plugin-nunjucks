@@ -23,7 +23,7 @@ exports.translate = function(load) {
     var SystemJSLoader = this;
     return _loadDictFile.call(SystemJSLoader, path.join(basePath, 'loc', lang, fileName + '.loc'), !!lang)
     .then(function(file) {
-        return new Promise(function(resolve, reject) {
+        return new Promise(function(resolve) {
             var dict = _parseDictFile(file);
             if (dict)
                 tpl = _localizeTpl(tpl, dict);
@@ -35,12 +35,12 @@ exports.translate = function(load) {
             console.log('tpl:', load.source);
             */
             var precompiled = _precompile(tpl, name);
-            var precompiledJsStr = precompileGlobal([precompiled])
+            var precompiledJsStr = precompileGlobal([precompiled]);
 
             resolve(precompiledJsStr);
         });
     });
-}
+};
 
 function _parseDictFile(file) {
     if (!file) return {};
@@ -61,7 +61,7 @@ function _loadDictFile(requestURI, isLocalize) {
     }
 
     var SystemJSLoader = this;
-    return new Promise(function(resolve, reject) {
+    return new Promise(function(resolve) {
         SystemJSLoader.import(requestURI + '!text').then(function(file) {
             resolve(file);
         }).catch(function() {
@@ -118,7 +118,7 @@ function _resolvePathToDir(filePath, resolveToDir) {
     return (out.length? out.reverse().join('/') + '/': '') + fileName;
 }
 function _calclulateParentOfTplDir(dir) {
-    var dir = dir.split('/');
+    dir = dir.split('/');
     while (dir.length)
         if (dir.pop() == 'tpl') break;
     if (!dir.length)

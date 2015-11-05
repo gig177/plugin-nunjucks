@@ -6,7 +6,7 @@
     "linebreak-style": [2, "unix"],
     "semi": [2, "always"],
 
-    "comma-dangle": [2, "always"],
+    "comma-dangle": [2, "always-multiline"],
     "no-extra-parens": [2],
     "no-extra-semi": [2],
     "no-dupe-keys": [2],
