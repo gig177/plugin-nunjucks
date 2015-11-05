@@ -6,6 +6,11 @@ var compiler = require('nunjucks/src/compiler'),
 
 var path = require('path');
 
+/*
+ * This hack is obliged to these lines
+ * https://github.com/mozilla/nunjucks/blob/v2.1.0/browser/nunjucks-slim.js#L503
+ * Generate ReferenceError at building time
+ */
 if (typeof window === 'undefined')
     global.window = {};
 
