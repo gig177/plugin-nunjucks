@@ -6,10 +6,8 @@ var compiler = require('nunjucks/src/compiler'),
 
 var path = require('path');
 
-if (typeof window === 'undefined') {
+if (typeof window === 'undefined')
     global.window = {};
-    global.__nodeEnv__ = true;
-}
 
 exports.translate = function(load) {
     var lang = '';
