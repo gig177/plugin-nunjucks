@@ -23,7 +23,6 @@ System.config({
     "jquery": "github:components/jquery@2.1.4",
     "nunjucks": "github:mozilla/nunjucks@2.1.0",
     "path": "github:jspm/nodelibs-path@0.1.0",
-    "text": "github:systemjs/plugin-text@0.0.2",
     "github:jspm/nodelibs-assert@0.1.0": {
       "assert": "npm:assert@1.3.0"
     },

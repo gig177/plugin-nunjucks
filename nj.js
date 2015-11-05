@@ -1,4 +1,3 @@
-var textPlugin = require('text');
 //var nj = require('nunjucks/browser/nunjucks');
 var nj = require('nunjucks');
 var precompileGlobal = require('nunjucks/src/precompile-global');
@@ -13,8 +12,6 @@ if (typeof window === 'undefined') {
 }
 
 exports.translate = function(load) {
-    var SystemJSLoader = this;
-
     var lang = '';
     if ('njOptions' in this && 'locale' in this.njOptions)
         lang = this.njOptions.locale;
@@ -23,19 +20,11 @@ exports.translate = function(load) {
     var basePath = _calclulateParentOfTplDir(load.address).replace(this.baseURL, ''),
         fileName = path.basename(load.address).slice(0, -5);
 
-    return _loadDictFile.call(this, path.join(basePath, 'loc', lang, fileName + '.loc'), !!lang)
+    var SystemJSLoader = this;
+    return _loadDictFile.call(SystemJSLoader, path.join(basePath, 'loc', lang, fileName + '.loc'), !!lang)
     .then(function(file) {
         return new Promise(function(resolve, reject) {
             var dict = _parseDictFile(file);
-
-            if (!_isNunjucksTpl(tpl)) {
-                //console.log('simple html');
-                tpl = textPlugin.translate(load);
-                if (dict)
-                    tpl = _localizeTpl(tpl, dict);
-                resolve(tpl);
-            }
-
             if (dict)
                 tpl = _localizeTpl(tpl, dict);
 
@@ -53,9 +42,6 @@ exports.translate = function(load) {
     });
 }
 
-function _isNunjucksTpl(text) {
-    return text.indexOf('{{') !== -1 || text.indexOf('{%') !== -1;
-}
 function _parseDictFile(file) {
     if (!file) return {};
 
@@ -136,6 +122,6 @@ function _calclulateParentOfTplDir(dir) {
     while (dir.length)
         if (dir.pop() == 'tpl') break;
     if (!dir.length)
-        throw new Error("tpl dir doesn't found");
+        throw new Error('tpl dir doesn\'t found');
     return dir.join('/') + '/';
 }
