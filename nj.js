@@ -1,13 +1,11 @@
-//var nj = require('nunjucks/browser/nunjucks');
 var nj = require('nunjucks');
 var precompileGlobal = require('nunjucks/src/precompile-global');
 var compiler = require('nunjucks/src/compiler'),
     Environment = nj.Environment;
-
-var path = require('path');
-
+var path = require('path'),
+    _ = require('underscore');
 /*
- * This hack is obliged to these lines
+ * This hack is obliging to these lines
  * https://github.com/mozilla/nunjucks/blob/v2.1.0/browser/nunjucks-slim.js#L503
  * Generate ReferenceError at building time
  */
@@ -15,93 +13,52 @@ if (typeof window === 'undefined')
     global.window = {};
 
 exports.translate = function(load) {
-    var lang = '';
-    if ('njOptions' in this && 'locale' in this.njOptions)
-        lang = this.njOptions.locale;
-    var tpl = load.source;
+    var opts = _.extend({
+        beforePrecompile: null,
+        rootDir: 'tpl'
+    }, this.njOptions);
 
-    var basePath = _calclulateParentOfTplDir(load.address).replace(this.baseURL, ''),
-        fileName = path.basename(load.address).slice(0, -5);
-
-    var SystemJSLoader = this;
-    return _loadDictFile.call(SystemJSLoader, path.join(basePath, 'loc', lang, fileName + '.loc'), !!lang)
-    .then(function(file) {
-        return new Promise(function(resolve) {
-            var dict = _parseDictFile(file);
-            if (dict)
-                tpl = _localizeTpl(tpl, dict);
-
-            //tpl = _cleanTplFromCommonJsFormat(tpl);
-            var name = _resolvePathToDir(load.address);
-            /*
-            console.log('name:', name);
-            console.log('tpl:', load.source);
-            */
-            var precompiled = _precompile(tpl, name);
-            var precompiledJsStr = precompileGlobal([precompiled]);
-
-            resolve(precompiledJsStr);
-        });
+    return _loadBeforePrecompileHook.call(this, opts.beforePrecompile)
+    .then(function(hook) {
+        return hook.call(this, load.address, load.source);
+    }).then(function(transformedSource) {
+        return main.call(this, load.address, transformedSource || load.source);
     });
 };
-
-function _parseDictFile(file) {
-    if (!file) return {};
-
-    var out = {};
-    file.split('\n').forEach(function(str) {
-        if (!str) return true;
-        str = str.split('=');
-        out[ str[0].trim() ] = str[1].trim();
+function main(address, source) {
+    return new Promise(function(resolve) {
+        var name = _resolvePathToDir(address);
+        var precompiled = _precompile(source, name);
+        var precompiledJsStr = precompileGlobal([precompiled]);
+        resolve(precompiledJsStr);
     });
-    return out;
 }
-function _loadDictFile(requestURI, isLocalize) {
-    if (!isLocalize) {
-        return new Promise(function(resolve) {
-            resolve('');
-        });
-    }
+function _loadBeforePrecompileHook(obj) {
+    var hookPath = obj? Object.keys(obj)[0]: null;
+        hookArgs = hookPath? obj[hookPath]: null;
+    if (!(hookArgs instanceof Array))
+        hookArgs = [hookArgs];
+
+    if (!hookPath)
+        return Promise.resolve(_noop);
 
     var SystemJSLoader = this;
     return new Promise(function(resolve) {
-        SystemJSLoader.import(requestURI + '!text').then(function(file) {
-            resolve(file);
+        SystemJSLoader.import(hookPath).then(function(hook) {
+            resolve(function() {
+                var args = Array.prototype.slice.call(arguments).concat(hookArgs);
+                return _handleResult(
+                    hook.apply(SystemJSLoader, args)
+                );
+            });
         }).catch(function() {
-            resolve('');
+            resolve(_noop);
         });
     });
-}
-function _localizeTpl(tpl, dict) {
-    for (var key in dict) {
-        var ptn = new RegExp('\\[\\[\\s*?' + key + '\\s*?\\]\\]');
-        tpl = tpl.replace(ptn, dict[key]);
-        if (!tpl) throw new Error('Error at localization ' + key);
+    function _noop() {};
+    function _handleResult(result) {
+        return typeof result === 'string'? Promise.resolve(result): result;
     }
-    return tpl;
-}
-
-
-// this snippet from origin nunjucks code base
-// https://github.com/mozilla/nunjucks/blob/v2.1.0/src/precompile.js#L113
-function _precompile(str, name, env) {
-    env = env || new Environment([]);
-
-    var asyncFilters = env.asyncFilters;
-    var extensions = env.extensionsList;
-    var template;
-
-    try {
-        template = compiler.compile(str,
-                                    asyncFilters,
-                                    extensions,
-                                    name,
-                                    env.opts);
-    } catch(err) {
-        throw nj.lib.prettifyError(name, false, err);
-    }
-
-    return { name: name, template: template };
 }
 function _resolvePathToDir(filePath, resolveToDir) {
     resolveToDir = resolveToDir || 'tpl';
@@ -120,11 +77,26 @@ function _resolvePathToDir(filePath, resolveToDir) {
 
     return (out.length? out.reverse().join('/') + '/': '') + fileName;
 }
-function _calclulateParentOfTplDir(dir) {
-    dir = dir.split('/');
-    while (dir.length)
-        if (dir.pop() == 'tpl') break;
-    if (!dir.length)
-        throw new Error('tpl dir doesn\'t found');
-    return dir.join('/') + '/';
+/*
+ * This snippet has borrowed from the original nunjucks code base
+ * https://github.com/mozilla/nunjucks/blob/v2.1.0/src/precompile.js#L113
+ */
+function _precompile(str, name, env) {
+    env = env || new Environment([]);
+
+    var asyncFilters = env.asyncFilters;
+    var extensions = env.extensionsList;
+    var template;
+
+    try {
+        template = compiler.compile(str,
+                                    asyncFilters,
+                                    extensions,
+                                    name,
+                                    env.opts);
+    } catch(err) {
+        throw nj.lib.prettifyError(name, false, err);
+    }
+
+    return { name: name, template: template };
 }
