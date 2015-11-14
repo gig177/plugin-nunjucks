@@ -15,7 +15,7 @@ if (typeof window === 'undefined')
 exports.translate = function(load) {
     var opts = _.extend({
         beforePrecompile: null,
-        rootDir: 'tpl'
+        rootDir: 'tpl',
     }, this.njOptions);
 
     return _loadBeforePrecompileHook.call(this, opts.beforePrecompile)
@@ -34,7 +34,7 @@ function main(address, source) {
     });
 }
 function _loadBeforePrecompileHook(obj) {
-    var hookPath = obj? Object.keys(obj)[0]: null;
+    var hookPath = obj? Object.keys(obj)[0]: null,
         hookArgs = hookPath? obj[hookPath]: null;
     if (!(hookArgs instanceof Array))
         hookArgs = [hookArgs];
@@ -55,7 +55,7 @@ function _loadBeforePrecompileHook(obj) {
             resolve(_noop);
         });
     });
-    function _noop() {};
+    function _noop() {}
     function _handleResult(result) {
         return typeof result === 'string'? Promise.resolve(result): result;
     }

@@ -14,7 +14,7 @@ define(function(require) {
             var dict = _parseDictFile(dictFile);
             return _locilizeSourceTpl(source, dict);
         });
-    }
+    };
     function _locilizeSourceTpl(source, dict) {
         var out = source;
         for (var key in dict) {
@@ -49,7 +49,7 @@ define(function(require) {
         });
     }
     function _calclulateParentOfTplDir(address) {
-        dir = address.split('/');
+        var dir = address.split('/');
         while (dir.length)
             if (dir.pop() == 'tpl') break;
         if (!dir.length)
