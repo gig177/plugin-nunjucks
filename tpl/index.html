@@ -13,7 +13,16 @@
         <script src="/jspm_packages/system.js"></script>
         <script src="/config.js"></script>
         <script>
-            System.config({ njOptions: { locale: 'ru' } });
+            {% if lang == 'ru' %}
+                System.config({
+                    njOptions: {
+                        "beforePrecompile": {
+                            "helpers/localizer": "ru"
+                        },
+                        "rootDir": "tpl"
+                    }
+                });
+            {% endif %}
             System.import('pages/{{ tpl }}');
         </script>
     {% endif %}
