@@ -1,5 +1,5 @@
 {% block header %}
-<p class="_default_content">[[ This is the default content ]]</p>
+    <p class="_default_content">[[ This is the default content ]]</p>
 {% endblock %}
 
 <section class="left">
@@ -8,7 +8,6 @@
 
 <section class="right">
     {% block right %}
-    <p class="_username">Hello {{ username }}</p>
-    <p class="_more_content">[[ This is more content ]]</p>
+        <p class="_right_side">This is the right content of parent</p>
     {% endblock %}
 </section>

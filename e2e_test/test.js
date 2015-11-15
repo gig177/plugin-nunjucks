@@ -1,44 +1,52 @@
-var qs = require('querystring');
+var qs = require('querystring'),
+    _ = require('underscore');
 
 var url = 'http://localhost:3000';
 
 var tests = {};
 tests.child = function(client) {
-    client.expect.element('._left_side').text.to.contain('Это левая сторона').before(3000);
-    client.expect.element('._right_side').text.to.contain('This is the right side');
-    client.expect.element('._default_content').text.to.contain('This is the default content');
+    client.expect.element('._default_content').text.to.contain('This is the default content').before(3000);
+    client.expect.element('._left_side').text.to.contain('This is the left side');
 };
 tests._parent = function(client) {
     client.expect.element('._default_content').text.to.contain('This is the default content').before(3000);
-    client.expect.element('._more_content').text.to.contain('This is more content');
-    client.expect.element('._username').text.to.contain('Evgen');
+    client.expect.element('._right_side').text.to.contain('This is the right content of parent');
 };
-tests.simple_text = function(client) {
-    client.expect.element('._hello_msg').text.to.contain('hello_msg').before(3000);
-    client.expect.element('._by_msg').text.to.contain('прощальное сообщение');
+tests.hello_username = function(client) {
+    client.expect.element('._hello_msg').text.to.contain('hello_start').before(3000);
+    client.expect.element('._hello_msg').text.to.contain('Evgen');
+}
+
+tests.before_precompile_hook = function(client) {
+    client.expect.element('._hello_msg').text.to.contain('Привет').before(3000);
 }
 
 var exports = {};
 [
-    formatQuesryString('child', 1),
-    formatQuesryString('child', 0),
+    formatQuesryString('child', { dev: 1 }),
+    formatQuesryString('_parent', { dev: 1 }),
+    formatQuesryString('hello_username', { dev: 1 }),
+    formatQuesryString('before_precompile_hook', { dev: 1, tpl: 'hello_username', lang: 'ru' }),
 
-    formatQuesryString('_parent', 1),
-    formatQuesryString('_parent', 0),
-
-    formatQuesryString('simple_text', 1),
-    formatQuesryString('simple_text', 0),
-//].forEach(_unpackArgs((qs, name) => {
+    /*
+    formatQuesryString('child', { dev: 1 }),
+    formatQuesryString('_parent', { dev: 1 }),
+    formatQuesryString('hello_username', { dev: 1 }),
+    formatQuesryString('before_precompile_hook', { dev: 1, tpl: 'hello_username', lang: 'ru' }),
+    */
 ].forEach(_unpackArgs((name, qs) => {
-        exports[qs] = function(client) {
-            client.url(url + qs).pause(700);
-            tests[name](client);
-            client.end()
-        }
+    exports[qs] = function(client) {
+        client.url(url + qs);
+        tests[name](client);
+        client.end()
+    }
 }));
 
-function formatQuesryString(tpl, dev) {
-    return [tpl, '/?' + qs.stringify({ tpl : tpl, dev : dev })];
+function formatQuesryString(testName, params) {
+    params = _.extend({
+        tpl: testName,
+    }, params);
+    return [testName, '/?' + qs.stringify(params)];
 }
 function _unpackArgs(construct) {
     return function(arr) {
